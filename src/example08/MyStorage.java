@@ -7,11 +7,11 @@ public class MyStorage {
     private static Scanner scan;
     private static Storage storage;
 
-    public void close() {
+    private void close() {
         System.out.println("[Item_Storage] end!");
     }
 
-    public static void start() {
+    private static void start() {
         System.out.printf("[System] %s 점장님 어서오세요.\n", name);
         storage = new Storage();
     }
@@ -29,18 +29,73 @@ public class MyStorage {
     }
 
     private static int selectMenu() {
-        return scan.nextInt();
+        int ret = 0;
+        try {
+            ret = scan.nextInt();
+        } catch (Exception e) {
+            ret = 0;
+            scan = new Scanner(System.in); //무한 반복을 위한 scanner 초기화(?)
+        }
+        return ret;
     }
 
-    private static void productInput() {}
+    private static void productInput() {
+        System.out.print("[System] 제품 등록을 원하는 제품명을 입력하세요 : ");
+        String inputName = scan.next();
+        if (storage.productInput(inputName)) {
+            System.out.println("[System] 등록이 완료됐습니다.");
+        } else {
+            System.out.println("[System] 등록 실패했습니다.");
+        }
+    }
 
-    private static void productRemove() {}
+    private static void productRemove() {
+        System.out.print("[System] 제품 등록 취소를 원하는 제품명을 입력하세요 : ");
+        String inputName = scan.next();
+        if (storage.productRemove(inputName)) {
+            System.out.println("[System] 제품 취소가 완료됬습니다.");
+        } else {
+            System.out.println("[System] 등록 취소가 가능한 제품이 없습니다.");
+        }
+    }
 
-    private static void productAmountAdd() {}
+    private static void productAmountAdd() {
+        System.out.println("[System] 물건의 수량을 추가합니다.(입고)");
+        productSearch();
 
-    private static void productAmountDecrease() {}
+        System.out.print("[System] 수량을 추가할 제품명을 입력하세요 : ");
+        String inputName = scan.next();
+        System.out.println("[System] 추가할 수량을 입력해주세요 : ");
+        int inputCnt = scan.nextInt();
+        if (storage.productAmountAdd(inputName, inputCnt)) {
+            System.out.println("[Clear] 정상적으로 제품의 수량 추가가 완료되었습니다.");
+            productSearch();
+        } else {
+            System.out.println("[Error] 제품 수량 추가 실패했습니다.");
+        }
 
-    private static void productSearch() {}
+    }
+
+    private static void productAmountDecrease() {
+        System.out.println("[System] 제품의 출고를 진행합니다.");
+        productSearch();
+
+        System.out.print("[System] 출고를 진행할 제품명을 입력하세요 : ");
+        String inputName = scan.next();
+        System.out.println("[System] 원하는 출고량을 입력해주세요 : ");
+        int inputCnt = scan.nextInt();
+        if (storage.productAmountDecrease(inputName, inputCnt)) {
+            System.out.println("[Clear] 출고가 완료되었습니다.");
+            productSearch();
+        } else {
+            System.out.println("[Error] 제품 출고 실패했습니다.");
+        }
+    }
+
+    private static void productSearch() {
+        System.out.println("\n[System] 현재 등록된 제품 목록 ▼");
+        storage.showProductListWithCount();
+    }
 
     public static void main(String[] args) {
         boolean isExit = false;
@@ -75,7 +130,7 @@ public class MyStorage {
                     isExit = true;
                     break;
                 default:
-                    System.out.println(("[System] 기능 선택을 다시하세요."));
+                    System.out.println(("[System] 지원되는 기능(1~6번)을 확인후 다시 선택해주세요."));
             }
             if (isExit) break;
         }
